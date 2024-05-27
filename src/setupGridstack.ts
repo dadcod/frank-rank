@@ -1,9 +1,4 @@
-import {
-  GridItemHTMLElement,
-  GridStack,
-  GridStackOptions,
-  GridStackWidget,
-} from "gridstack";
+import { GridStack, GridStackOptions, GridStackWidget } from "gridstack";
 
 const granularityMultiplier = 2;
 let ranksGrid: GridStack;

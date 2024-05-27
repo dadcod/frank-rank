@@ -1,0 +1,70 @@
+body {
+  background: #444;
+}
+.grid-stack {
+  background: #444;
+}
+.grid-stack-item-content {
+  background-color: #18bc9c;
+  align-items: center;
+  display: flex;
+}
+.custom-content {
+  text-align: center;
+}
+.grids-container {
+  width: 75%;
+}
+.grid-wrapper {
+  margin: 10px;
+  border: 1px solid #000;
+}
+.rank-grids {
+  display: flex;
+}
+.ranks {
+  flex: 1;
+}
+.ranker {
+  flex: 12;
+}
+
+.grid-stack-item {
+  $gridstack-columns: 24;
+
+  @for $i from 1 through $gridstack-columns {
+    &[gs-w="#{$i}"] {
+      width: calc(100% / $gridstack-columns) * $i;
+    }
+    &[gs-x="#{$i}"] {
+      left: calc(100% / $gridstack-columns) * $i;
+    }
+    &.grid-stack-item[gs-min-w="#{$i}"] {
+      min-width: calc(100% / $gridstack-columns) * $i;
+    }
+    &.grid-stack-item[gs-max-w="#{$i}"] {
+      max-width: calc(100% / $gridstack-columns) * $i;
+    }
+  }
+}
+
+.ranks {
+  .grid-stack-item {
+    $gridstack-columns: 2;
+
+    @for $i from 1 through $gridstack-columns {
+      &[gs-w="#{$i}"] {
+        width: calc(100% / $gridstack-columns) * $i;
+      }
+      &[gs-x="#{$i}"] {
+        left: calc(100% / $gridstack-columns) * $i;
+      }
+      &.grid-stack-item[gs-min-w="#{$i}"] {
+        min-width: calc(100% / $gridstack-columns) * $i;
+      }
+      &.grid-stack-item[gs-max-w="#{$i}"] {
+        max-width: calc(100% / $gridstack-columns) * $i;
+      }
+    }
+  }
+}

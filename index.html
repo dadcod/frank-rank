@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="node_modules/gridstack/dist/gridstack-all.js"></script>
+    <link
+      href="node_modules/gridstack/dist/gridstack.min.css"
+      rel="stylesheet"
+    />
+    <title>Vite + TS</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="controls">
+        <button id="add-item">Add Item</button>
+        <button id="add-row">Add row</button>
+        <button id="save">Save</button>
+        <button id="sort">Sort</button>
+        <button id="change-columns">Change cols</button>
+        <label for="granularity">Grid granularity</label>
+        <input id="granularity" type="number" max="10" />
+      </div>
+      <div class="grids-container">
+        <!-- <div class="grid-wrapper">
+          <div class="ranks"></div>
+        </div>
+        <div class="grid-wrapper">
+          <div class="ranker"></div>
+        </div> -->
+
+        <div class="rank-grids">
+          <div class="ranks"></div>
+          <div class="ranker"></div>
+        </div>
+        <div class="grid-wrapper">
+          <div class="pool"></div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

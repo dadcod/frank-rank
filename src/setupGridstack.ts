@@ -189,7 +189,7 @@ function setGridLines(
                                               linear-gradient(to bottom, lightgray 1px, transparent 1px)`;
 }
 
-function adjustGridRows(_: Event, el: GridItemHTMLElement) {
+function adjustGridRows() {
   const savedVersion = rankerGrid.save(true, true);
   rankerGrid.destroy(false);
   console.log(ranksGrid.getRow());

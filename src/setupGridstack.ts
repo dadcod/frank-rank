@@ -10,11 +10,11 @@ export function setupGridstack() {
   ranksGrid = initRanksGrid();
   rankerGrid = initRankerGrid();
   poolGrid = initPoolGrid();
+  ranksGrid.cellHeight(rankerGrid.getCellHeight());
 
   addGridEvents();
-  addEventHandlers();
   setupMutationObserver();
-  ranksGrid.cellHeight(rankerGrid.getCellHeight());
+  addEventHandlers();
 }
 
 function initRanksGrid(): GridStack {

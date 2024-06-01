@@ -2,15 +2,21 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 	"os"
 
 	"github.com/alexedwards/scs/v2"
-	"github.com/dadcod/frank-rank/pkg/env"
+	"github.com/dadcod/frank-rank/internal/database"
 	"github.com/dadcod/frank-rank/internal/middleware"
+	"github.com/dadcod/frank-rank/pkg/env"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+
+	_ "modernc.org/sqlite"
 )
 
 var (
@@ -55,6 +61,7 @@ func main() {
 	router.HandleFunc("GET /login", HandleLogin)
 	router.HandleFunc("GET /callback", HandleCallback)
 	router.HandleFunc("GET /welcome", WelcomeHandler)
+	router.HandleFunc("GET /test", TestDbHandler)
 
 	server := http.Server{
 		Addr:    ":8080",
@@ -102,4 +109,37 @@ func WelcomeHandler(w http.ResponseWriter, r *http.Request) {
 	userID := sessionManager.GetString(r.Context(), "userID")
 	userName := sessionManager.GetString(r.Context(), "userName")
 	w.Write([]byte("Hello, " + userName + " (" + userID + ")"))
+}
+
+var ddl string = "../frankrank.db"
+
+func TestDbHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("sqlite", ddl)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	queries := database.New(db)
+
+	ctx := context.Background()
+
+	if name := sessionManager.GetString(r.Context(), "userName"); name != "" {
+
+		// Create a new user
+		err = queries.CreateUser(ctx, database.CreateUserParams{
+			Name:  sessionManager.GetString(r.Context(), "userName"),
+			Email: sessionManager.GetString(r.Context(), "userID"),
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	// Get the user
+	user, err := queries.GetUserByEmail(ctx, sessionManager.GetString(r.Context(), "userID"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("User: %v\n", user)
 }

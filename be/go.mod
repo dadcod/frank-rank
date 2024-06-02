@@ -3,6 +3,7 @@ module github.com/dadcod/frank-rank
 go 1.22.2
 
 require (
+	github.com/a-h/templ v0.2.707
 	github.com/alexedwards/scs/v2 v2.8.0
 	golang.org/x/oauth2 v0.20.0
 	modernc.org/sqlite v1.29.10

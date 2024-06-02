@@ -27,3 +27,4 @@ dist-ssr
 .env
 database
 *.db
+*_templ.go

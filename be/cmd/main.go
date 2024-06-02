@@ -9,9 +9,11 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/a-h/templ"
 	"github.com/alexedwards/scs/v2"
 	"github.com/dadcod/frank-rank/internal/database"
 	"github.com/dadcod/frank-rank/internal/middleware"
+	"github.com/dadcod/frank-rank/internal/templates"
 	"github.com/dadcod/frank-rank/pkg/env"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -31,32 +33,26 @@ var (
 	sessionManager *scs.SessionManager
 )
 
+func createRouter(config *http.Server, middleware middleware.Middleware) *http.Server {
+	router := http.NewServeMux()
+
+	config.Handler = middleware(router)
+	return config
+}
+
 func main() {
 	env.LoadEnv(envFile)
 	oauthConfig.ClientID = os.Getenv("GOOGLE_CLIENT_ID")
 	oauthConfig.ClientSecret = os.Getenv("GOOGLE_CLIENT_SECRET")
 	sessionManager = scs.New()
-
+	autContext := middleware.AuthContext{SessionManager: sessionManager, AllowedPaths: []string{"/login", "/callback", "/home"}}
 	router := http.NewServeMux()
-	stack := middleware.CreateStack(middleware.Logging, sessionManager.LoadAndSave)
+	stack := middleware.CreateStack(middleware.Logging, sessionManager.LoadAndSave, autContext.IsAuthenticated)
 
 	router.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello, world!"))
 	})
-	router.HandleFunc("GET /home", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/html")
-		w.Write([]byte(`<!DOCTYPE html>
-							<html lang="en">
-								<head>
-									<meta charset="UTF-8" />
-									<title>Vite + TS</title>
-								</head>
-								<body>
-									<a href="/login">Login with Google</a>
-								</body>
-							</html>
-						`))
-	})
+	router.Handle("GET /home", templ.Handler(templates.Home()))
 
 	router.HandleFunc("GET /login", HandleLogin)
 	router.HandleFunc("GET /callback", HandleCallback)

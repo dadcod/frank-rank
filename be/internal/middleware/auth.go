@@ -15,6 +15,10 @@ type AuthContext struct {
 	AllowedPaths   []string
 }
 
+func NewAuthContext(sessionManager *scs.SessionManager, allowedPaths []string) *AuthContext {
+	return &AuthContext{SessionManager: sessionManager, AllowedPaths: allowedPaths}
+}
+
 func (a AuthContext) IsAuthenticated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		for _, path := range a.AllowedPaths {

@@ -136,11 +136,6 @@ function addEventHandlers() {
       const items = rankerGrid.save(false);
       console.log(items);
       rankerGrid.column(rankerGrid.getColumn() + 1, "none");
-      // setTimeout(() => {
-      //   granularityMultiplier += 1;
-      //   rankerGrid.load([...items, ...rows]);
-      //   addRow();
-      // }, 500);
     });
   document.getElementById("save")?.addEventListener("click", function () {
     console.log(rankerGrid.save(true, true));

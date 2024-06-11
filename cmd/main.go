@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -32,7 +33,10 @@ var (
 )
 
 func main() {
+	fmt.Printf("Starting server on")
 	env.LoadEnv(envFile)
+
+	fmt.Printf("$v", os.Getenv("PORT"))
 
 	oauthConfig.ClientID = os.Getenv("GOOGLE_CLIENT_ID")
 	oauthConfig.ClientSecret = os.Getenv("GOOGLE_CLIENT_SECRET")
@@ -48,24 +52,19 @@ func main() {
 
 	router := http.NewServeMux()
 
-	router.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, world!"))
-	})
-
-	router.Handle("GET /home", templ.Handler(templates.Home()))
-
 	as := handlers.NewAuthSession(oauthConfig, sessionManager, queries)
 
+	router.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	router.Handle("GET /home", templ.Handler(templates.Home()))
 	router.HandleFunc("GET /login", as.HandleLogin)
 	router.HandleFunc("GET /callback", as.HandleCallback)
 	router.HandleFunc("GET /welcome", as.WelcomeHandler)
-	router.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	autContext := middleware.NewAuthContext(sessionManager, []string{"/login", "/callback", "/home", "/static"})
 
 	stack := middleware.CreateStack(middleware.Logging, sessionManager.LoadAndSave, autContext.IsAuthenticated)
 	server := http.Server{
-		Addr:    ":8080",
+		Addr:    os.Getenv("PORT"),
 		Handler: stack(router),
 	}
 	server.ListenAndServe()

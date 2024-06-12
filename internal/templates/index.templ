@@ -1,0 +1,24 @@
+package templates
+
+import "strings"
+
+
+import(
+	"html/template"
+	"log"
+)
+
+func loadTmepl(page templ.Component)( *template.Template, interface{}){
+	goTemplate,err := template.New("index.html").Funcs(template.FuncMap{}).ParseFiles("./fe/dist/index.html")
+	if err != nil {
+		log.Fatal(err)
+		panic(err)
+	}
+	var sb = strings.Builder{}
+	page.Render(context.Background(),&sb)
+	return goTemplate, template.HTML(sb.String())
+}
+
+templ Index(page templ.Component) {
+	@templ.FromGoHTML(loadTmepl(page) )
+}

@@ -50,13 +50,15 @@ func (as *AuthSession) HandleCallback(w http.ResponseWriter, r *http.Request) {
 	as.sessionManager.Put(r.Context(), "userID", userInfo.Email)
 	as.sessionManager.Put(r.Context(), "userName", userInfo.Name)
 
-	// Create a new user
-	err = as.queries.CreateUser(r.Context(), database.CreateUserParams{
-		Name:  as.sessionManager.GetString(r.Context(), "userName"),
-		Email: as.sessionManager.GetString(r.Context(), "userID"),
-	})
-	if err != nil {
-		log.Fatal(err)
+	if u, _ := as.queries.GetUserByEmail(r.Context(), userInfo.Email); u.Email == "" {
+		// Create a new user
+		err = as.queries.CreateUser(r.Context(), database.CreateUserParams{
+			Name:  as.sessionManager.GetString(r.Context(), "userName"),
+			Email: as.sessionManager.GetString(r.Context(), "userID"),
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	http.Redirect(w, r, "/welcome", http.StatusFound)

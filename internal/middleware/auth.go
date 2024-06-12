@@ -12,24 +12,20 @@ const AuthUserID = "middleware.auth.userID"
 
 type AuthContext struct {
 	SessionManager *scs.SessionManager
-	AllowedPaths   []string
+	ProtectedPaths []string
 }
 
-func NewAuthContext(sessionManager *scs.SessionManager, allowedPaths []string) *AuthContext {
-	return &AuthContext{SessionManager: sessionManager, AllowedPaths: allowedPaths}
+func NewAuthContext(sessionManager *scs.SessionManager, protectedPaths []string) *AuthContext {
+	return &AuthContext{SessionManager: sessionManager, ProtectedPaths: protectedPaths}
 }
 
 func (a AuthContext) IsAuthenticated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		for _, path := range a.AllowedPaths {
-			if r.URL.Path == path {
-				next.ServeHTTP(w, r)
+		for _, path := range a.ProtectedPaths {
+			if r.URL.Path == path && a.SessionManager.Token(r.Context()) == "" {
+				http.Redirect(w, r, "/login", http.StatusSeeOther)
 				return
 			}
-		}
-		if a.SessionManager.Token(r.Context()) == "" {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
 		}
 
 		next.ServeHTTP(w, r)

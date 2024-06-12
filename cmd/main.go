@@ -28,7 +28,7 @@ var (
 		Scopes:       []string{"openid", "profile", "email"},
 		Endpoint:     google.Endpoint,
 	}
-	envFile        = "../../.env"
+	envFile        = ".env"
 	sessionManager *scs.SessionManager
 )
 
@@ -43,7 +43,7 @@ func main() {
 
 	sessionManager = scs.New()
 
-	db, err := sql.Open("sqlite", "../frankrank.db")
+	db, err := sql.Open("sqlite", "frankrank.db")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,17 +54,19 @@ func main() {
 
 	as := handlers.NewAuthSession(oauthConfig, sessionManager, queries)
 
-	router.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	router.Handle("GET /home", templ.Handler(templates.Home()))
+	router.Handle("GET /assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("./fe/dist/assets"))))
+
+	router.Handle("GET /", templ.Handler(templates.Index(templates.Home())))
 	router.HandleFunc("GET /login", as.HandleLogin)
 	router.HandleFunc("GET /callback", as.HandleCallback)
 	router.HandleFunc("GET /welcome", as.WelcomeHandler)
 
-	autContext := middleware.NewAuthContext(sessionManager, []string{"/login", "/callback", "/home", "/static"})
+	autContext := middleware.NewAuthContext(sessionManager, []string{"/welcome"})
 
 	stack := middleware.CreateStack(middleware.Logging, sessionManager.LoadAndSave, autContext.IsAuthenticated)
+
 	server := http.Server{
-		Addr:    os.Getenv("PORT"),
+		Addr:    fmt.Sprintf(":%s", os.Getenv("PORT")),
 		Handler: stack(router),
 	}
 	server.ListenAndServe()

@@ -56,7 +56,7 @@ func main() {
 
 	router.Handle("GET /assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("./fe/dist/assets"))))
 
-	router.Handle("GET /", templ.Handler(templates.Index(templates.Home())))
+	router.Handle("GET /", templ.Handler(templates.Layout(templates.Home())))
 	router.HandleFunc("GET /login", as.HandleLogin)
 	router.HandleFunc("GET /callback", as.HandleCallback)
 	router.HandleFunc("GET /welcome", as.WelcomeHandler)

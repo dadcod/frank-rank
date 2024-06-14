@@ -7,6 +7,11 @@ let poolGrid: GridStack;
 let id = 0;
 
 export function setupGridstack() {
+  const ranksElement = document.querySelector(".ranks");
+  if (!ranksElement) {
+    console.log("No ranks element found");
+    return;
+  }
   ranksGrid = initRanksGrid();
   rankerGrid = initRankerGrid();
   poolGrid = initPoolGrid();

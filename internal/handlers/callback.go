@@ -53,8 +53,8 @@ func (as *AuthSession) HandleCallback(w http.ResponseWriter, r *http.Request) {
 	if u, _ := as.queries.GetUserByEmail(r.Context(), userInfo.Email); u.Email == "" {
 		// Create a new user
 		err = as.queries.CreateUser(r.Context(), database.CreateUserParams{
-			Name:  as.sessionManager.GetString(r.Context(), "userName"),
-			Email: as.sessionManager.GetString(r.Context(), "userID"),
+			Name:  userInfo.Name,
+			Email: userInfo.Email,
 		})
 		if err != nil {
 			log.Fatal(err)

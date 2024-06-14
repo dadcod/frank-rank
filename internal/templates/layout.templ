@@ -10,23 +10,24 @@ import(
 	"github.com/dadcod/frank-rank/pkg/utils"
 )
 
-func loadTmepl(page templ.Component)( *template.Template, interface{}){
+
+func loadTmepl(page templ.Component, ctx context.Context)( *template.Template, interface{}){
 	goTemplate,err := template.New("index.html").Funcs(template.FuncMap{}).ParseFiles("./fe/dist/index.html")
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
 	var sb = strings.Builder{}
-	page.Render(context.Background(),&sb)
+	page.Render(ctx,&sb)
 	return goTemplate, template.HTML(sb.String())
 }
 
 templ Layout(page templ.Component) {
-	@templ.FromGoHTML(loadTmepl(Index(page)) )
+	@templ.FromGoHTML(loadTmepl(index(page),ctx))
 }
 
 templ footer() {
-	<footer class="bg-primary-600 p-4"></footer>
+	<footer class="bg-primary-600 p-4"> Great footer</footer>
 }
 
 templ nav() {
@@ -43,7 +44,7 @@ templ nav() {
 			<ol class="flex space-x-4">
 				if utils.GetUser(ctx) != nil {
 					<li>
-						<button class="text-gray-200" hx-target="body" hx-swap="innerHTML" hx-post="/logout">Logout</button>
+						<a class="text-gray-200" href="/logout">Logout</a>
 					</li>
 				} else {
 					<li>
@@ -59,7 +60,7 @@ templ nav() {
 }
 
 
-templ Index(contents templ.Component) {
+templ index(contents templ.Component) {
 		@nav()
 		<main class="flex-1 container ">
 			@contents

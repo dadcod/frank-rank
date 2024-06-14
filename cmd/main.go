@@ -60,10 +60,11 @@ func main() {
 	router.HandleFunc("GET /login", as.HandleLogin)
 	router.HandleFunc("GET /callback", as.HandleCallback)
 	router.HandleFunc("GET /welcome", as.WelcomeHandler)
+	router.HandleFunc("GET /logout", as.HandleLogout)
 
-	autContext := middleware.NewAuthContext(sessionManager, []string{"/welcome"})
+	authContext := middleware.NewAuthContext(sessionManager, []string{"/welcome"})
 
-	stack := middleware.CreateStack(middleware.Logging, sessionManager.LoadAndSave, autContext.IsAuthenticated)
+	stack := middleware.CreateStack(middleware.Logging, sessionManager.LoadAndSave, authContext.IsAuthenticated, authContext.AddUserToContext)
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%s", os.Getenv("PORT")),

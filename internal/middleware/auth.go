@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"net/http"
-	"os/user"
 
 	"github.com/alexedwards/scs/v2"
 )
@@ -35,8 +34,11 @@ func (ac AuthContext) IsAuthenticated(next http.Handler) http.Handler {
 
 func (ac AuthContext) AddUserToContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if user := ac.SessionManager.GetString(r.Context(), "userID"); user != ""  {
-		ctx := context.WithValue(r.Context(), AuthUserID, user)
-		next.ServeHTTP(w, r.WithContext(ctx))}
+		if user := ac.SessionManager.GetString(r.Context(), "userID"); user != "" {
+			ctx := context.WithValue(r.Context(), AuthUserID, user)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		}
+		next.ServeHTTP(w, r)
+
 	})
 }

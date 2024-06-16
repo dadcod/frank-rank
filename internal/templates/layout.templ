@@ -1,12 +1,13 @@
 package templates
 
 import "strings"
+import "fmt"
 
 
 import(
 	"html/template"
 	"log"
-
+	"encoding/json"
 	"github.com/dadcod/frank-rank/pkg/utils"
 )
 
@@ -30,6 +31,25 @@ templ footer() {
 	<footer class="bg-primary-600 p-4"> Great footer</footer>
 }
 
+
+func getHeaders() string{
+	type Headers struct {
+		UsePartial string `json:"Use-Partial"`
+	}
+
+	myData := Headers{
+		UsePartial: "true",
+	}
+	// Marshal the struct into a JSON string
+	jsonData, err := json.Marshal(myData)
+	if err != nil {
+		fmt.Println("Error marshaling JSON:", err)
+		return ""
+	}
+
+	return string(jsonData)
+}
+
 templ nav() {
 	<nav class="bg-primary-600 p-4">
 		<div class="container flex justify-between">
@@ -38,7 +58,7 @@ templ nav() {
 					<a class="text-gray-200" href="/">Home</a>
 				</li>
 				<li>
-					<a class="text-gray-200" href="/about">About</a>
+					<a class="text-gray-200" hx-get="/about" hx-target="main" hx-swap="innerHtml" href="/about" hx-replace-url="true" hx-headers={ getHeaders() }>About</a>
 				</li>
 			</ol>
 			<ol class="flex space-x-4">
@@ -48,7 +68,7 @@ templ nav() {
 					</li>
 				} else {
 					<li>
-						<a class="text-gray-200" href="/register">Register</a>
+						<button class="text-gray-200" href="/register">Register</button>
 					</li>
 					<li>
 						<a class="text-gray-200" href="/login">Login</a>

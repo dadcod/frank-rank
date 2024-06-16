@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "gridstack": "^10.1.2",
+    "htmx.org": "^1.9.12",
     "vite-plugin-html": "^3.2.2"
   }
 }

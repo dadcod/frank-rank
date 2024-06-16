@@ -7,12 +7,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/a-h/templ"
 	"github.com/alexedwards/scs/v2"
 	"github.com/dadcod/frank-rank/internal/database"
 	"github.com/dadcod/frank-rank/internal/handlers"
 	"github.com/dadcod/frank-rank/internal/middleware"
-	"github.com/dadcod/frank-rank/internal/templates"
+	pages "github.com/dadcod/frank-rank/internal/templates/pages"
 	"github.com/dadcod/frank-rank/pkg/env"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -56,12 +55,13 @@ func main() {
 
 	router.Handle("GET /assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("./fe/dist/assets"))))
 
-	router.Handle("GET /", templ.Handler(templates.Layout(templates.Home())))
+	router.HandleFunc("GET /", as.RootHandler)
 	router.HandleFunc("GET /login", as.HandleLogin)
 	router.HandleFunc("GET /callback", as.HandleCallback)
 	router.HandleFunc("GET /welcome", as.WelcomeHandler)
 	router.HandleFunc("GET /logout", as.HandleLogout)
-
+	router.HandleFunc("GET /about", handlers.PageHandler(pages.About()))
+	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {})
 	authContext := middleware.NewAuthContext(sessionManager, []string{"/welcome"})
 
 	stack := middleware.CreateStack(middleware.Logging, sessionManager.LoadAndSave, authContext.IsAuthenticated, authContext.AddUserToContext)

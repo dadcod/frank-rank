@@ -37,6 +37,7 @@ func (ac AuthContext) AddUserToContext(next http.Handler) http.Handler {
 		if user := ac.SessionManager.GetString(r.Context(), "userID"); user != "" {
 			ctx := context.WithValue(r.Context(), AuthUserID, user)
 			next.ServeHTTP(w, r.WithContext(ctx))
+			return
 		}
 		next.ServeHTTP(w, r)
 
